@@ -1,26 +1,33 @@
 .profilePic{
+    width: 45px; 
+    height: 45px; 
+    border-radius: 50%;
+    object-fit: cover; 
+}
+/* .profilePic{
     width: 100px; 
     height: 100px; 
     border-radius: 50%;
     object-fit: cover; 
-}
+} */
 
 .navbar {
     position: fixed;
     top: 0;
-    left: 0;
+    right: 0;
     width: 100%;
-    height: 100px;
-    background-color: #E6B9A6; /* Adjust as needed */
+    height: 80px;
+    width: calc(100vw - 400px);
+    background-color: #E6B9A6; 
     z-index: 1000;
 }
 
 .interface{
-    background-color: #EEEDEB;
+    /* background-color: #EEEDEB; */
     /* margin-top: 100px; */
-    position: fixed;
+    /* position: fixed;
     top: 100px;
-    left: 0;
+    left: 0; */
     
 
 }
@@ -28,8 +35,44 @@
 .messagesBoard{
     background-color: rgb(249, 249, 249);
     position: fixed;
+    top: 0;
+    left: 0;
     height: 100%;
     width: 400px;
-    border-right: 1px solid #d7d3cc;
+    border-right: 1px solid #e2e1df;
    
+}
+
+.messageText,.buttonsBoard{
+    height: 80px;
+    border-bottom: 1px solid black;
+}
+
+.messagesBox{
+    /* background-color: aquamarine; */
+    display: flex;
+    flex-direction: column;
+}
+
+.message{
+    display: flex;
+    gap: 20px;
+    /* padding-left: 10px; */
+}
+
+.titleContainer{
+    display: flex; 
+    justify-content:space-between;
+    padding-top: 15px;
+    /* background-color: beige; */
+}
+.content{
+    /* background-color: blueviolet; */
+    width: 100%;
+    padding-right: 15px;
+}
+
+.pfp{
+    padding-left: 10px;
+    padding-top: 10px;
 }
