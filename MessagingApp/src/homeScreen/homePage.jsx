@@ -1,7 +1,7 @@
 import proilePic from './resize.jpg'
 import './homePage.css'
 import io from "socket.io-client"
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const socket = io('http://localhost:5000');
 
@@ -10,18 +10,18 @@ function homeScreen(){
   const [to, setTo] = useState('');
   const [chat, setChat] = useState([]);
 
+  const messagesEndRef = useRef(null);
+
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    // Connect and login when component mounts
     socket.emit('login', userId);
 
-    // Listen for incoming messages
-    socket.on('receiveMessage', ({ from, message }) => {
-      setChat(prev => [...prev, { from, message }]);
+    //listen for incoming messages
+    socket.on('receiveMessage', ({ from, message, timestamp }) => {
+      setChat(prev => [...prev, { from, message, timestamp }]);
     });
 
-    // Cleanup on unmount
     return () => {
       socket.off('receiveMessage');
     };
@@ -29,11 +29,33 @@ function homeScreen(){
 
   const sendMessage = () => {
     if (message && to) {
-      socket.emit('sendMessage', { from: userId, to, message });
-      setChat(prev => [...prev, { from: 'You', message }]);
-      setMessage('');
+      const timestamp = new Date().toISOString();
+
+  const msgData = {
+    from: userId,
+    to,
+    message,
+    timestamp,
+  };
+
+  //send message
+  socket.emit('sendMessage', msgData);
+
+  //update UI
+  setChat(prev => [...prev, {
+    from: userId,
+    message,
+    timestamp,
+  }]);
+
+  //clear message input
+  setMessage(''); 
     }
   };
+
+  // runs every time a new message is added
+  useEffect(() => {
+  messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });}, [chat]); 
 
   return (
     <>
@@ -46,7 +68,7 @@ function homeScreen(){
                 Messages
             </div>
             <div className='buttonsBoard'>
-                buttons here
+                new msg | online friends | friends list
             </div>
             <div className='messagesBox'>
                 {/* Messages placeholder */}
@@ -60,13 +82,48 @@ function homeScreen(){
                             <span className='time'>11:55 AM</span>  
                         </div>
                         
-                        <span className='message'>Here is your last message</span>
+                        <span className='messageContaint'>Here is your last message</span>
                     </div>
 
                 </div>
             </div>
         </div>
-
+          <div className='convoContainer' style={{
+    
+  }}>
+            <div className='msgsContainer'>
+              {chat.map((msg, idx) => (
+              <div
+                key={idx}
+                style={{
+                  display: 'flex',
+                  justifyContent: msg.from === userId ? 'flex-end' : 'flex-start',
+                  marginBottom: '0.5rem'
+                }}
+              >
+                <div style={{
+                  background: msg.from === userId ? '#dcf8c6' : '#eee',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '20px',
+                  maxWidth: '60%',
+                }}>
+                  <div>{msg.message}</div>
+                  <div style={{ fontSize: '0.7rem', textAlign: 'right' }}>
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+            </div>
+            <div className='msgInput'>
+              <div>
+              <input type="text" name="" value={message} onChange={(e) => setMessage(e.target.value)} id="" placeholder='Enter message...' />
+              </div>
+              <input type="text" name="" id="" value={to} onChange={(e) => setTo(e.target.value)} placeholder='Enter message...' />
+              <button onClick={sendMessage}>Send</button>
+            </div>
+          </div>
     </div>
     </>
     // <div style={{ padding: '1rem' }}>
